@@ -5,6 +5,17 @@ from typing import TypedDict
 
 
 class Info(TypedDict, total=False):
+    """
+    типовой словарь для записи в справочник
+
+    first_name: Имя пользователя
+
+     mid_name: str Отчество\n
+     last_name: str Фамилия\n
+     company: str Компания\n
+     phone_number: str номер телефона \n
+    additional_number: str дополнительный\n
+    """
     first_name: str
     mid_name: str
     last_name: str
@@ -22,6 +33,7 @@ class TelephoneDirectory:
         """
             В конструктор подается путь
         :param path: путь до файла
+        :exception JSONDecodeError : Файл пуст, нет
         """
 
         self._path: str = path
@@ -68,13 +80,16 @@ class TelephoneDirectory:
                 self.cur_page += 1
         print(f'\npage {self.cur_page}')
 
-    def append(self, dir: Info):
+    def append(self,):
         """
+        Добавляет запись в справочник
 
-        :param dir:
         :return:
         """
-        self.directory = dir
+        info = Info()
+        for field in info_keys:
+            info[field] = input(f'enter {field}')
+        self.directory = info
 
     def find(self):
         """
@@ -120,10 +135,7 @@ if __name__ == '__main__':
         ans = input('Choose:')
         match ans:
             case '1':
-                info = Info()
-                for field in info_keys:
-                    info[field] = input(f'enter {field}')
-                directory.append(info)
+                directory.append()
                 ...
             case '2':
                 try:
