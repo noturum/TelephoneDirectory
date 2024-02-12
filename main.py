@@ -25,6 +25,8 @@ class Info(TypedDict, total=False):
 
 
 class TelephoneDirectory:
+    HEAD = {'uid': 'НПП', 'first_name': 'Имя', 'mid_name': 'Отчество', 'last_name': 'Фамилия', 'company': 'Компания',
+            'phone_number': 'Номер', 'additional_number': 'Сотовый'}
     """
 
     """
@@ -39,10 +41,13 @@ class TelephoneDirectory:
         self._path: str = path
         self.cur_page: int = 1
         self.count_item: int = 5
+        self.len_sep = 30
         self._directory: None | list[Info] = []
+
         try:
-            self._directory = [Info({k: v for k, v in zip(row.keys(), row.values())}) for row in
-                               load(open(path, 'r'))]
+            if os.path.isfile(path):
+                self._directory = [Info({k: v for k, v in zip(row.keys(), row.values())}) for row in
+                                   load(open(path, 'r'))]
         except JSONDecodeError:
 
             print('empty file')
@@ -73,14 +78,18 @@ class TelephoneDirectory:
         """
         отрисовка справочника по страницам
         """
-        for ind, row in enumerate(self.directory):
-            print(f'{ind}. {row}')
+
+        [print(name_col, end=' ' * (self.len_sep - len(name_col)) + '|') for name_col in self.HEAD.values()]
+        print('\n')
+
+        for ind, rows in enumerate(self.directory):
+            [print(row, end=' ' * (self.len_sep - len(row)) + '|') for row in [str(ind)] + list(rows.values())]
             if not ind % self.count_item and ind > 0:
-                print(f'\npage {self.cur_page}')
+                print(f'\npage {self.cur_page}'.format())
                 self.cur_page += 1
         print(f'\npage {self.cur_page}')
 
-    def append(self,):
+    def append(self, ):
         """
         Добавляет запись в справочник
 
@@ -113,19 +122,19 @@ class TelephoneDirectory:
             print('Not found \n\n\n')
 
     def edit(self):
-        phone_id = int(input('Enter id'))
+        phone_id = int(input('Enter НПП'))
         info = directory.directory[phone_id]
 
-        for ind, field in enumerate(keys := list(info_keys)):
-            print(f'{ind}. {field}')
+        for ind, field in enumerate(keys := list(self.HEAD.keys())[1:]):
+            print(f'{ind}. {self.HEAD[field]}')
         ind_field = int(input('select item'))
         info[keys[ind_field]] = input('enter value')
 
 
 if __name__ == '__main__':
     ans = None
-    directory = TelephoneDirectory('../t.json')
-    info_keys = Info.__optional_keys__
+    directory = TelephoneDirectory('../l.json')
+    info_keys = list(directory.HEAD.keys())[1:0]
     while ans != '4':
         print(directory)
         print('1.Add\n' \
