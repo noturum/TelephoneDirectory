@@ -84,6 +84,7 @@ class TelephoneDirectory:
 
         for ind, rows in enumerate(self.directory):
             [print(row, end=' ' * (self.len_sep - len(row)) + '|') for row in [str(ind)] + list(rows.values())]
+            print('\n')
             if not ind % self.count_item and ind > 0:
                 print(f'\npage {self.cur_page}'.format())
                 self.cur_page += 1
